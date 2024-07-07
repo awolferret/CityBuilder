@@ -4,8 +4,8 @@ namespace Audio
 {
     public class AudioPlayer : MonoBehaviour
     {
-        public AudioClip placementSound;
-        public AudioSource audioSource;
+        [SerializeField] private AudioClip _placementSound;
+        [SerializeField] private AudioSource _audioSource;
 
         public static AudioPlayer instance;
 
@@ -19,8 +19,8 @@ namespace Audio
 
         public void PlayPlacementSound()
         {
-            if(placementSound != null) 
-                audioSource.PlayOneShot(placementSound);
+            if (_placementSound != null)
+                _audioSource.PlayOneShot(_placementSound);
         }
     }
 }
