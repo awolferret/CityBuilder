@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Grid
+namespace GridLogic
 {
     /// <summary>
     /// Source https://github.com/lordjesus/Packt-Introduction-to-graph-algorithms-for-game-developers
