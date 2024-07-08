@@ -5616,7 +5616,7 @@ MonoBehaviour:
   _camera: {fileID: 2044889011}
   _layerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
 --- !u!4 &590394694
 Transform:
   m_ObjectHideFlags: 0
@@ -8493,6 +8493,7 @@ GameObject:
   m_Component:
   - component: {fileID: 892884895}
   - component: {fileID: 892884894}
+  - component: {fileID: 892884896}
   m_Layer: 0
   m_Name: RoadManager
   m_TagString: Untagged
@@ -8514,6 +8515,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _placementManager: {fileID: 1655489854}
   _roadStraight: {fileID: 5661862354351878554, guid: 0cf01c743836d154eb47042e1bc62afd, type: 3}
+  _roadFixer: {fileID: 892884896}
 --- !u!4 &892884895
 Transform:
   m_ObjectHideFlags: 0
@@ -8529,6 +8531,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &892884896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 892884893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c52bf4bcdfb4cda8348a7d97d9b90b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _deadEnd: {fileID: 1120765361980748800, guid: 126bc1b54aa974c45b523eabbb58d51e, type: 3}
+  _straight: {fileID: 5661862354351878554, guid: 0cf01c743836d154eb47042e1bc62afd, type: 3}
+  _corner: {fileID: 7077802812573144028, guid: fd4c97eb7b86f1149a7745204ed8904e, type: 3}
+  _threeWay: {fileID: 2384947387477557946, guid: 2524a8437a2d4394da7f7a0546a71f3d, type: 3}
+  _fourWay: {fileID: 3351635067702010651, guid: f4402828bce58b54791119f89fa2df61, type: 3}
 --- !u!1001 &895427888
 PrefabInstance:
   m_ObjectHideFlags: 0
