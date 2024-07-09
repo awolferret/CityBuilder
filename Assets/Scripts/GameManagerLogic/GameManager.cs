@@ -1,6 +1,9 @@
 using CameraLogic;
 using InputLogic;
 using PlacementLogic;
+using PlacementLogic.Buildings;
+using PlacementLogic.Roads;
+using UI;
 using UnityEngine;
 
 namespace GameManagerLogic
@@ -10,25 +13,54 @@ namespace GameManagerLogic
         [SerializeField] private CameraMovement _cameraMovement;
         [SerializeField] private InputManager _inputManager;
         [SerializeField] private RoadManager _roadManager;
+        [SerializeField] private UIController _uiController;
+        [SerializeField] private StructureManager _structureManager;
 
-        private void OnEnable() => 
-            _inputManager.OnMouseClick += HandleMouseClick;
-
-        private void OnDisable() => 
-            _inputManager.OnMouseClick -= HandleMouseClick;
-
-        private void HandleMouseClick(Vector3Int position)
+        private void OnEnable()
         {
-            Debug.Log(position);
-            _roadManager.PlaceRoad(position);
+            _uiController.OnRoadButtonClick += OnRoadClick;
+            _uiController.OnBuildingButtonClick += OnBuildingClick;
+            _uiController.OnSpecialButtonClick += OnSpecialClick;
         }
 
-        private void Update()
+        private void OnDisable()
         {
+            _uiController.OnRoadButtonClick -= OnRoadClick;
+            _uiController.OnBuildingButtonClick -= OnBuildingClick;
+            _uiController.OnSpecialButtonClick -= OnSpecialClick;
+        }
+
+        private void OnSpecialClick()
+        {
+            ClearInputActions();
+            _inputManager.OnMouseClick += _structureManager.PlaceSpecial;
+        }
+
+        private void OnBuildingClick()
+        {
+            ClearInputActions();
+            _inputManager.OnMouseClick += _structureManager.PlaceHouse;
+        }
+
+        private void OnRoadClick()
+        {
+            ClearInputActions();
+            _inputManager.OnMouseClick += _roadManager.PlaceRoad;
+            _inputManager.OnMouseHold += _roadManager.PlaceRoad;
+            _inputManager.OnMouseUp += _roadManager.FinishPlaceRoad;
+        }
+
+        private void ClearInputActions()
+        {
+            _inputManager.OnMouseClick = null;
+            _inputManager.OnMouseHold = null;
+            _inputManager.OnMouseUp = null;
+        }
+
+        private void Update() =>
             MoveCamera();
-        }
 
-        private void MoveCamera() => 
+        private void MoveCamera() =>
             _cameraMovement.MoveCamera(new Vector3(_inputManager.CameraMovement.x, 0, _inputManager.CameraMovement.y));
     }
 }

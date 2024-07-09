@@ -2,7 +2,7 @@
 using GridLogic;
 using UnityEngine;
 
-namespace PlacementLogic
+namespace PlacementLogic.Roads
 {
     public class RoadFixer : MonoBehaviour
     {
@@ -12,6 +12,8 @@ namespace PlacementLogic
         [SerializeField] private GameObject _threeWay;
         [SerializeField] private GameObject _fourWay;
 
+        public GameObject BaseRoad => _deadEnd;
+        
         public void FixRoadAtPosition(PlacementManager placementManager, Vector3Int tempPosition)
         {
             var result = placementManager.GetNeighbourTypresFor(tempPosition);

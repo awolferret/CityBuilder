@@ -15,6 +15,9 @@ namespace PlacementLogic
         private Dictionary<Vector3Int, StructureModel> _temporaryRoadObjects =
             new Dictionary<Vector3Int, StructureModel>();
 
+        private Dictionary<Vector3Int, StructureModel> _structures =
+            new Dictionary<Vector3Int, StructureModel>();
+
         private void Start() =>
             _placemendGrid = new Grid(_width, _height);
 
@@ -40,10 +43,80 @@ namespace PlacementLogic
         {
             if (_temporaryRoadObjects.ContainsKey(position))
                 _temporaryRoadObjects[position].SwapModel(newModel, rotation);
+            else if (_structures.ContainsKey(position))
+                _structures[position].SwapModel(newModel, rotation);
         }
 
         private bool CheckPositionOfType(Vector3Int position, CellType type) =>
             _placemendGrid[position.x, position.z] == type;
+
+        public CellType[] GetNeighbourTypresFor(Vector3Int position) =>
+            _placemendGrid.GetAllAdjacentCellTypes(position.x, position.z);
+
+        public List<Vector3Int> GetNeighbourOfTypreFor(Vector3Int position, CellType cellType)
+        {
+            List<Point> neighbourVertices = _placemendGrid.GetAdjacentCellsOfType(position.x, position.z, cellType);
+            List<Vector3Int> neighbours = new List<Vector3Int>();
+
+            foreach (Point point in neighbourVertices)
+                neighbours.Add(new Vector3Int(point.X, 0, point.Y));
+
+            return neighbours;
+        }
+
+        public void RemoveAllTempStructures()
+        {
+            foreach (StructureModel structure in _temporaryRoadObjects.Values)
+            {
+                Vector3Int position = Vector3Int.RoundToInt(structure.transform.position);
+                _placemendGrid[position.x, position.z] = CellType.Empty;
+                Destroy(structure.gameObject);
+            }
+
+            _temporaryRoadObjects.Clear();
+        }
+
+        public List<Vector3Int> GetPathBetween(Vector3Int startPosition, Vector3Int endPosition)
+        {
+            List<Point> resultPath = GridSearch.AStarSearch(_placemendGrid, new Point(startPosition.x, startPosition.z),
+                new Point(endPosition.x, endPosition.z));
+
+            List<Vector3Int> path = new List<Vector3Int>();
+
+            foreach (Point point in resultPath)
+                path.Add(new Vector3Int(point.X, 0, point.Y));
+
+            return path;
+        }
+
+        public void AddToStructures()
+        {
+            foreach (var obj in _temporaryRoadObjects)
+            {
+                _structures.Add(obj.Key, obj.Value);
+                DestroyNature(obj.Key);
+            }
+
+            _temporaryRoadObjects.Clear();
+        }
+
+        public void PlaceObject(Vector3Int position, GameObject prefab, CellType cellType)
+        {
+            _placemendGrid[position.x, position.z] = cellType;
+            StructureModel structureModel = CreateNewStructureModel(position, prefab, cellType);
+            _structures.Add(position, structureModel);
+            DestroyNature(position);
+        }
+
+        private void DestroyNature(Vector3Int position)
+        {
+            RaycastHit[] hits = Physics.BoxCastAll(position + new Vector3(0, 0.5f, 0),
+                new Vector3(0.5f, 0.5f, 0.5f), transform.up, Quaternion.identity, 1f,
+                1 << LayerMask.NameToLayer("Nature"));
+
+            foreach (RaycastHit item in hits)
+                Destroy(item.collider.gameObject);
+        }
 
         private StructureModel CreateNewStructureModel(Vector3Int position, GameObject structurePrefab,
             CellType cellType)
@@ -54,20 +127,6 @@ namespace PlacementLogic
             StructureModel structureModel = structure.AddComponent<StructureModel>();
             structureModel.CreateModel(structurePrefab);
             return structureModel;
-        }
-
-        public CellType[] GetNeighbourTypresFor(Vector3Int position) =>
-            _placemendGrid.GetAllAdjacentCellTypes(position.x, position.z);
-
-        public List<Vector3Int> GetNeighbourOfTypreFor(Vector3Int position, CellType cellType)
-        {
-            List<Point> neighbourVertices = _placemendGrid.GetAdjacentCellsOfType(position.x, position.z, cellType);
-            List<Vector3Int> neighbours = new List<Vector3Int>();
-
-            foreach (Point point in neighbourVertices) 
-                neighbours.Add(new Vector3Int(point.X, 0, point.Y));
-
-            return neighbours;
         }
     }
 }
