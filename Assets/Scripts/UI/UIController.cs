@@ -10,17 +10,19 @@ namespace UI
         [SerializeField] private Button _road;
         [SerializeField] private Button _building;
         [SerializeField] private Button _special;
+        [SerializeField] private Button _big;
         [SerializeField] private Color _outlinClor;
 
         private List<Button> _buttons;
-        
+
         public Action OnRoadButtonClick;
         public Action OnBuildingButtonClick;
         public Action OnSpecialButtonClick;
+        public Action OnBigButtonClick;
 
         private void Start()
         {
-            _buttons = new List<Button> {_road,_building, _special};
+            _buttons = new List<Button> { _road, _building, _special, _big };
         }
 
         private void OnEnable()
@@ -31,19 +33,26 @@ namespace UI
                 ModifyOutline(_road);
                 OnRoadButtonClick?.Invoke();
             });
-            
+
             _building.onClick.AddListener(() =>
             {
                 ResetButtonColor();
                 ModifyOutline(_building);
                 OnBuildingButtonClick?.Invoke();
             });
-            
+
             _special.onClick.AddListener(() =>
             {
                 ResetButtonColor();
                 ModifyOutline(_special);
                 OnSpecialButtonClick?.Invoke();
+            });
+            
+            _big.onClick.AddListener(() =>
+            {
+                ResetButtonColor();
+                ModifyOutline(_big);
+                OnBigButtonClick?.Invoke();
             });
         }
 
@@ -56,7 +65,7 @@ namespace UI
 
         private void ResetButtonColor()
         {
-            foreach (var button in _buttons) 
+            foreach (var button in _buttons)
                 button.GetComponent<Outline>().enabled = false;
         }
     }

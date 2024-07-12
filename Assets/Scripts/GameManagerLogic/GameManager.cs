@@ -21,6 +21,7 @@ namespace GameManagerLogic
             _uiController.OnRoadButtonClick += OnRoadClick;
             _uiController.OnBuildingButtonClick += OnBuildingClick;
             _uiController.OnSpecialButtonClick += OnSpecialClick;
+            _uiController.OnBigButtonClick += OnBigClick;
         }
 
         private void OnDisable()
@@ -28,6 +29,12 @@ namespace GameManagerLogic
             _uiController.OnRoadButtonClick -= OnRoadClick;
             _uiController.OnBuildingButtonClick -= OnBuildingClick;
             _uiController.OnSpecialButtonClick -= OnSpecialClick;
+        }
+
+        private void OnBigClick()
+        {
+            ClearInputActions();
+            _inputManager.OnMouseClick += _structureManager.PlaceBig;
         }
 
         private void OnSpecialClick()

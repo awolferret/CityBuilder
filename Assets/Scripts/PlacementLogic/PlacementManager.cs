@@ -107,6 +107,22 @@ namespace PlacementLogic
             _structures.Add(position, structureModel);
             DestroyNature(position);
         }
+        
+        public void PlaceObject(Vector3Int position, GameObject prefab, CellType cellType,int width, int height)
+        {
+            StructureModel structureModel = CreateNewStructureModel(position, prefab, cellType);
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int z = 0; z < height; z++)
+                {
+                    var newPosition = position + new Vector3Int(x, 0, z);
+                    _placemendGrid[newPosition.x, newPosition.z] = cellType;
+                    _structures.Add(newPosition, structureModel);
+                    DestroyNature(newPosition);
+                }
+            }
+        }
 
         private void DestroyNature(Vector3Int position)
         {
