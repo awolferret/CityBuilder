@@ -68,7 +68,7 @@ namespace PlacementLogic.Buildings
                     if (!DefaultCheck(newPosition))
                         return false;
                     if (!nearRoad)
-                        nearRoad = RoadCheck(position);
+                        nearRoad = RoadCheck(newPosition);
                 }
             }
 
@@ -111,9 +111,9 @@ namespace PlacementLogic.Buildings
 
         private bool RoadCheck(Vector3Int position)
         {
-            if (_placementManager.GetNeighbourOfTypreFor(position, CellType.Road).Count <= 0)
+            if (_placementManager.GetNeighbourOfTypeFor(position, CellType.Road).Count <= 0)
                 return false;
-
+            
             return true;
         }
 

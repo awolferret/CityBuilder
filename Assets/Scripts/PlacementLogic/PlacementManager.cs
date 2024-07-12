@@ -53,7 +53,7 @@ namespace PlacementLogic
         public CellType[] GetNeighbourTypresFor(Vector3Int position) =>
             _placemendGrid.GetAllAdjacentCellTypes(position.x, position.z);
 
-        public List<Vector3Int> GetNeighbourOfTypreFor(Vector3Int position, CellType cellType)
+        public List<Vector3Int> GetNeighbourOfTypeFor(Vector3Int position, CellType cellType)
         {
             List<Point> neighbourVertices = _placemendGrid.GetAdjacentCellsOfType(position.x, position.z, cellType);
             List<Vector3Int> neighbours = new List<Vector3Int>();

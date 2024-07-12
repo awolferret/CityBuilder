@@ -81,7 +81,7 @@ namespace PlacementLogic.Roads
             foreach (Vector3Int tempPosition in _temporaryPlacementPosition)
             {
                 _roadFixer.FixRoadAtPosition(_placementManager, tempPosition);
-                List<Vector3Int> neighbours = _placementManager.GetNeighbourOfTypreFor(tempPosition, CellType.Road);
+                List<Vector3Int> neighbours = _placementManager.GetNeighbourOfTypeFor(tempPosition, CellType.Road);
 
                 foreach (var roadPosition in neighbours)
                     if (_roadPositionToRecheck.Contains(roadPosition) == false)
