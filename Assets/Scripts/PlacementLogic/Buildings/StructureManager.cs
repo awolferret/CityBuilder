@@ -30,8 +30,7 @@ namespace PlacementLogic.Buildings
             if (CheckPosition(position))
             {
                 int randomIndex = GetRandomWightedIndex(_houseWieghts);
-                _placementManager.PlaceObject(position, _housesPrefabs[randomIndex].prefab, CellType.Structure,
-                    buildinIndex: randomIndex);
+                PlaceSmallStructure(position, _housesPrefabs, randomIndex, CellType.Structure);
             }
         }
 
@@ -40,8 +39,7 @@ namespace PlacementLogic.Buildings
             if (CheckPosition(position))
             {
                 int randomIndex = GetRandomWightedIndex(_specialWieghts);
-                _placementManager.PlaceObject(position, _specialPrefabs[randomIndex].prefab, CellType.SpecialStructure,
-                    buildinIndex: randomIndex);
+                PlaceSmallStructure(position, _specialPrefabs, randomIndex, CellType.SpecialStructure);
             }
         }
 
@@ -53,8 +51,7 @@ namespace PlacementLogic.Buildings
             if (CheckBigStructure(position, width, height))
             {
                 int randomIndex = GetRandomWightedIndex(_bigWieghts);
-                _placementManager.PlaceObject(position, _bigPrefabs[randomIndex].prefab, CellType.BigStructure, width,
-                    height, randomIndex);
+                PlaceBigStructure(position, randomIndex);
             }
         }
 
@@ -139,23 +136,32 @@ namespace PlacementLogic.Buildings
             switch (buildingType)
             {
                 case CellType.Structure:
-                    _placementManager.PlaceObject(position, _housesPrefabs[buildingIndex].prefab, CellType.Structure,
-                        buildinIndex: buildingIndex);
+                    PlaceSmallStructure(position, _housesPrefabs, buildingIndex, CellType.Structure);
                     break;
                 case CellType.BigStructure:
-                    _placementManager.PlaceObject(position, _bigPrefabs[buildingIndex].prefab, CellType.BigStructure, 2,
-                        2, buildingIndex);
+                    PlaceBigStructure(position, buildingIndex);
                     break;
                 case CellType.SpecialStructure:
-                    _placementManager.PlaceObject(position, _specialPrefabs[buildingIndex].prefab, CellType.Structure,
-                        buildinIndex: buildingIndex);
-                    break;
-                default:
+                    PlaceSmallStructure(position, _specialPrefabs, buildingIndex, CellType.SpecialStructure);
                     break;
             }
         }
 
-        public void ClearMap() => 
+        private void PlaceBigStructure(Vector3Int position, int buildingIndex)
+        {
+            _placementManager.PlaceObject(position, _bigPrefabs[buildingIndex].prefab, CellType.BigStructure, 2,
+                2, buildingIndex);
+        }
+
+        private void PlaceSmallStructure(Vector3Int position, StructurePrefabWeighted[] array, int buildingIndex,
+            CellType type)
+        {
+            _placementManager.PlaceObject(position, array[buildingIndex].prefab, type,
+                buildinIndex: buildingIndex);
+        }
+
+
+        public void ClearMap() =>
             _placementManager.ClearGrid();
     }
 
