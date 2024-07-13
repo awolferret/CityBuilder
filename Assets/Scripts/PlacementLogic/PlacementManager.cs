@@ -32,10 +32,11 @@ namespace PlacementLogic
         public bool CheckPositionFree(Vector3Int position) =>
             CheckPositionOfType(position, CellType.Empty);
 
-        public void PlaceTemporaryStructure(Vector3Int position, GameObject structurePrefab, CellType cellType)
+        public void PlaceTemporaryStructure(Vector3Int position, GameObject structurePrefab, CellType cellType,
+            int buildinIndex = -1)
         {
             _placemendGrid[position.x, position.z] = cellType;
-            StructureModel structureModel = CreateNewStructureModel(position, structurePrefab, cellType);
+            StructureModel structureModel = CreateNewStructureModel(position, structurePrefab, cellType, buildinIndex);
             _temporaryRoadObjects.Add(position, structureModel);
         }
 
@@ -100,25 +101,20 @@ namespace PlacementLogic
             _temporaryRoadObjects.Clear();
         }
 
-        public void PlaceObject(Vector3Int position, GameObject prefab, CellType cellType)
+        public void PlaceObject(Vector3Int position, GameObject prefab, CellType cellType,
+            int width = 1, int height = 1, int buildinIndex = -1)
         {
-            _placemendGrid[position.x, position.z] = cellType;
-            StructureModel structureModel = CreateNewStructureModel(position, prefab, cellType);
-            _structures.Add(position, structureModel);
-            DestroyNature(position);
-        }
-        
-        public void PlaceObject(Vector3Int position, GameObject prefab, CellType cellType,int width, int height)
-        {
-            StructureModel structureModel = CreateNewStructureModel(position, prefab, cellType);
+            StructureModel structureModel = CreateNewStructureModel(position, prefab, cellType, buildinIndex);
 
+
+            _structures.Add(position, structureModel);
+            
             for (int x = 0; x < width; x++)
             {
                 for (int z = 0; z < height; z++)
                 {
-                    var newPosition = position + new Vector3Int(x, 0, z);
+                    Vector3Int newPosition = position + new Vector3Int(x, 0, z);
                     _placemendGrid[newPosition.x, newPosition.z] = cellType;
-                    _structures.Add(newPosition, structureModel);
                     DestroyNature(newPosition);
                 }
             }
@@ -135,14 +131,27 @@ namespace PlacementLogic
         }
 
         private StructureModel CreateNewStructureModel(Vector3Int position, GameObject structurePrefab,
-            CellType cellType)
+            CellType cellType, int buildingIndex)
         {
             GameObject structure = new GameObject(cellType.ToString());
             structure.transform.SetParent(transform);
             structure.transform.localPosition = position;
             StructureModel structureModel = structure.AddComponent<StructureModel>();
-            structureModel.CreateModel(structurePrefab);
+            structureModel.CreateModel(structurePrefab, buildingIndex, cellType);
             return structureModel;
+        }
+
+        public Dictionary<Vector3Int, StructureModel> GetAllStructures() =>
+            _structures;
+
+        public void ClearGrid()
+        {
+            _placemendGrid = new Grid(_width, _height);
+
+            foreach (StructureModel item in _structures.Values)
+                Destroy(item.gameObject);
+
+            _structures.Clear();
         }
     }
 }

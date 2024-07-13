@@ -1,3 +1,4 @@
+using GridLogic;
 using UnityEngine;
 
 namespace PlacementLogic
@@ -6,10 +7,15 @@ namespace PlacementLogic
     {
         private float _yHeight = 0;
 
-        public void CreateModel(GameObject model)
+        [field: SerializeField] public CellType Type { get; private set; }
+        [field: SerializeField] public int BuildingPrefabIndex { get; private set; }
+
+        public void CreateModel(GameObject model, int buildingIndex, CellType type)
         {
             GameObject newModel = Instantiate(model, transform);
             _yHeight = newModel.transform.position.y;
+            Type = type;
+            BuildingPrefabIndex = buildingIndex;
         }
 
         public void SwapModel(GameObject model, Quaternion rotation)

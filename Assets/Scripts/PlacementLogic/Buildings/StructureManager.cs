@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GridLogic;
 using UnityEngine;
@@ -8,9 +9,9 @@ namespace PlacementLogic.Buildings
 {
     public class StructureManager : MonoBehaviour
     {
-        [SerializeField] private StruckturePrefabWeighted[] _housesPrefabs;
-        [SerializeField] private StruckturePrefabWeighted[] _specialPrefabs;
-        [SerializeField] private StruckturePrefabWeighted[] _bigPrefabs;
+        [SerializeField] private StructurePrefabWeighted[] _housesPrefabs;
+        [SerializeField] private StructurePrefabWeighted[] _specialPrefabs;
+        [SerializeField] private StructurePrefabWeighted[] _bigPrefabs;
         [SerializeField] private PlacementManager _placementManager;
 
         private float[] _houseWieghts;
@@ -29,7 +30,8 @@ namespace PlacementLogic.Buildings
             if (CheckPosition(position))
             {
                 int randomIndex = GetRandomWightedIndex(_houseWieghts);
-                _placementManager.PlaceObject(position, _housesPrefabs[randomIndex].prefab, CellType.Structure);
+                _placementManager.PlaceObject(position, _housesPrefabs[randomIndex].prefab, CellType.Structure,
+                    buildinIndex: randomIndex);
             }
         }
 
@@ -38,7 +40,8 @@ namespace PlacementLogic.Buildings
             if (CheckPosition(position))
             {
                 int randomIndex = GetRandomWightedIndex(_specialWieghts);
-                _placementManager.PlaceObject(position, _specialPrefabs[randomIndex].prefab, CellType.Structure);
+                _placementManager.PlaceObject(position, _specialPrefabs[randomIndex].prefab, CellType.SpecialStructure,
+                    buildinIndex: randomIndex);
             }
         }
 
@@ -50,8 +53,8 @@ namespace PlacementLogic.Buildings
             if (CheckBigStructure(position, width, height))
             {
                 int randomIndex = GetRandomWightedIndex(_bigWieghts);
-                _placementManager.PlaceObject(position, _bigPrefabs[randomIndex].prefab, CellType.Structure, width,
-                    height);
+                _placementManager.PlaceObject(position, _bigPrefabs[randomIndex].prefab, CellType.BigStructure, width,
+                    height, randomIndex);
             }
         }
 
@@ -113,7 +116,7 @@ namespace PlacementLogic.Buildings
         {
             if (_placementManager.GetNeighbourOfTypeFor(position, CellType.Road).Count <= 0)
                 return false;
-            
+
             return true;
         }
 
@@ -127,10 +130,37 @@ namespace PlacementLogic.Buildings
 
             return true;
         }
+
+        public Dictionary<Vector3Int, StructureModel> GetAllStructures() =>
+            _placementManager.GetAllStructures();
+
+        public void PlaceLoadedStructure(Vector3Int position, int buildingIndex, CellType buildingType)
+        {
+            switch (buildingType)
+            {
+                case CellType.Structure:
+                    _placementManager.PlaceObject(position, _housesPrefabs[buildingIndex].prefab, CellType.Structure,
+                        buildinIndex: buildingIndex);
+                    break;
+                case CellType.BigStructure:
+                    _placementManager.PlaceObject(position, _bigPrefabs[buildingIndex].prefab, CellType.BigStructure, 2,
+                        2, buildingIndex);
+                    break;
+                case CellType.SpecialStructure:
+                    _placementManager.PlaceObject(position, _specialPrefabs[buildingIndex].prefab, CellType.Structure,
+                        buildinIndex: buildingIndex);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void ClearMap() => 
+            _placementManager.ClearGrid();
     }
 
     [Serializable]
-    public struct StruckturePrefabWeighted
+    public struct StructurePrefabWeighted
     {
         public GameObject prefab;
         [Range(0, 1)] public float weight;

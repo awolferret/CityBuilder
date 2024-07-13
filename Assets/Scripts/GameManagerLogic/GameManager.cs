@@ -1,8 +1,11 @@
+using System.Collections.Generic;
 using CameraLogic;
+using GridLogic;
 using InputLogic;
 using PlacementLogic;
 using PlacementLogic.Buildings;
 using PlacementLogic.Roads;
+using SaveLoadSystem;
 using UI;
 using UnityEngine;
 
@@ -15,6 +18,7 @@ namespace GameManagerLogic
         [SerializeField] private RoadManager _roadManager;
         [SerializeField] private UIController _uiController;
         [SerializeField] private StructureManager _structureManager;
+        [SerializeField] private SaveSystem _saveSystem;
 
         private void OnEnable()
         {
@@ -29,6 +33,48 @@ namespace GameManagerLogic
             _uiController.OnRoadButtonClick -= OnRoadClick;
             _uiController.OnBuildingButtonClick -= OnBuildingClick;
             _uiController.OnSpecialButtonClick -= OnSpecialClick;
+        }
+
+        public void SaveGame()
+        {
+            SaveDataSerialization saveData = new SaveDataSerialization();
+
+            foreach (KeyValuePair<Vector3Int, StructureModel> structureData in _structureManager.GetAllStructures())
+                saveData.AddStructureData(structureData.Key, structureData.Value.BuildingPrefabIndex,
+                    structureData.Value.Type);
+
+            string jsonString = JsonUtility.ToJson(saveData);
+            _saveSystem.SaveData(jsonString);
+        }
+
+        public void LoadData()
+        {
+            string jsonString = _saveSystem.LoadData();
+
+            if (string.IsNullOrEmpty(jsonString))
+                return;
+
+            SaveDataSerialization saveData = JsonUtility.FromJson<SaveDataSerialization>(jsonString);
+            _structureManager.ClearMap();
+            
+            foreach (BuildingDataSerialization structureData in saveData.structuresData)
+            {
+                Vector3Int position = Vector3Int.RoundToInt(structureData.position.GetValue());
+
+                if (structureData.buildingType == CellType.Road)
+                    LoadRoad(position);
+                else
+                {
+                    _structureManager.PlaceLoadedStructure(position, structureData.buildingIndex,
+                        structureData.buildingType);
+                }
+            }
+        }
+        
+        private void LoadRoad(Vector3Int position)
+        {
+            _roadManager.PlaceRoad(position);
+            _roadManager.FinishPlaceRoad();
         }
 
         private void OnBigClick()

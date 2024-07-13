@@ -53,6 +53,7 @@ namespace GridLogic
         Empty,
         Road,
         Structure,
+        BigStructure,
         SpecialStructure,
         None
     }
